@@ -4,17 +4,23 @@ def input_students
   #create an empty array
   students = []
   #get the first name
-  name = gets.chomp
+  name = gets.strip
   while !name.empty? do
+    puts "Which cohort do they belong to?"
+      cohort = gets.strip
+      if cohort.empty?
+          cohort = :november
+      end
+      cohort = cohort.to_sym
     puts "Favourite hobby"
-      hobby = gets.chomp
+      hobby = gets.strip
     puts "Country of birth"
-      country = gets.chomp
+      country = gets.strip
     puts "What is their height?"
-      height = gets.chomp.to_s
-    students << {name: name, cohort: :november, hobby: hobby, country: country, height: height}
+      height = gets.strip.to_s
+    students << {name: name, cohort: cohort, hobby: hobby, country: country, height: height}
     puts "Please enter another name"
-    name = gets.chomp
+    name = gets.strip
   end
   #return the array of students
   students
@@ -25,11 +31,17 @@ def print_header
 end
 def print(students)
   students.each_with_index do |student, index|
-    puts ("#{index + 1}. #{student[:name]}, #{student[:cohort]} cohort, likes #{student[:hobby]}, born in #{student[:country]}, is #{student[:height]}cm tall").center(80)
+    if student[:name].length < 12
+      puts ("#{index + 1}. #{student[:name]}, #{student[:cohort]} cohort, likes #{student[:hobby]}, born in #{student[:country]}, is #{student[:height]}cm tall").center(80)
+    end
   end
 end
 def print_footer(students)
-  puts "Overall, we have #{students.count} great students".center(80)
+  if students.count == 1
+    puts "Overall, we have #{students.count} great student".center(80)
+  else
+    puts "Overall, we have #{students.count} great students".center(80)
+  end
 end
 #nothing happens until we call the methods
 students = input_students
