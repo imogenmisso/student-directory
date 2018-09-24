@@ -1,22 +1,33 @@
+@students = []
 def interactive_menu
-  students = []
   loop do
-    puts "1. Input the students"
-    puts "2. Show the students"
-    puts "9. Exit"
-    selection = gets.chomp
-    case selection
-      when "1"
-        students = input_students
-      when "2"
-        print_header
-        print(students)
-        print_footer(students)
-      when "9"
-        exit
-      else
-        puts "I don't know what you meant, try again"
-    end
+    print_menu
+    process(gets.chomp)
+  end
+end
+
+def print_menu
+  puts "1. Input the students"
+  puts "2. Show the students"
+  puts "9. Exit"
+end
+
+def show_students
+  print_header
+  print_student_list
+  print_footer
+end
+
+def process(selection)
+  case selection
+    when "1"
+      input_students
+    when "2"
+      show_students
+    when "9"
+      exit
+    else
+      puts "I don't know what you meant, try again"
   end
 end
 
@@ -40,12 +51,11 @@ def input_students
       country = gets.strip
     puts "What is their height in cm?"
       height = gets.strip.to_s
-    students << {name: name, cohort: cohort, hobby: hobby, country: country, height: height}
+    @students << {name: name, cohort: cohort, hobby: hobby, country: country, height: height}
+    puts "Now we have #{@students.count} students"
     puts "Please enter another name"
     name = gets.strip
   end
-  #return the array of students
-  students
 end
 
 def print_header
@@ -53,17 +63,17 @@ def print_header
   puts "_____________".center(80)
 end
 
-def print(students)
-  students.each_with_index do |student, index|
+def print_student_list
+  @students.each_with_index do |student, index|
     if student[:name].length < 12
       puts ("#{index + 1}. #{student[:name]}, #{student[:cohort]} cohort, likes #{student[:hobby]}, born in #{student[:country]}, is #{student[:height]}cm tall").center(80)
     end
   end
 end
 
-def print_by_cohort(students)
+def print_by_cohort
   sorted_by_cohort = {}
-  students.each do |students_under_consideration|
+  @students.each do |students_under_consideration|
     cohort = students_under_consideration[:cohort]
     name = students_under_consideration[:name]
     if sorted_by_cohort[cohort] == nil
@@ -80,11 +90,11 @@ def print_by_cohort(students)
     end
 end
 
-def print_footer(students)
-  if students.count == 1
-    puts "Overall, we have #{students.count} great student".center(80)
+def print_footer
+  if @students.count == 1
+    puts "Overall, we have #{@students.count} great student".center(80)
   else
-    puts "Overall, we have #{students.count} great students".center(80)
+    puts "Overall, we have #{@students.count} great students".center(80)
   end
 end
 
