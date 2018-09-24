@@ -54,5 +54,5 @@ end
 #nothing happens until we call the methods
 students = input_students
 print_header
-print_revised(students)
+print(students)
 print_footer(students)
