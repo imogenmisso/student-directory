@@ -19,6 +19,7 @@ def interactive_menu
     end
   end
 end
+
 def input_students
   puts "Please enter the names of the students, followed by some personal information"
   puts "To finish, just hit return twice"
@@ -46,6 +47,7 @@ def input_students
   #return the array of students
   students
 end
+
 def print_header
   puts "The students of Villains Academy".center(80)
   puts "_____________".center(80)
@@ -85,7 +87,5 @@ def print_footer(students)
     puts "Overall, we have #{students.count} great students".center(80)
   end
 end
-students = input_students
-print_header
-print_by_cohort(students)
-print_footer(students)
+
+interactive_menu
