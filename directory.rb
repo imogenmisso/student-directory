@@ -30,10 +30,18 @@ def print_header
   puts "_____________".center(80)
 end
 def print(students)
-  students.each_with_index do |student, index|
-    if student[:name].length < 12
-      puts ("#{index + 1}. #{student[:name]}, #{student[:cohort]} cohort, likes #{student[:hobby]}, born in #{student[:country]}, is #{student[:height]}cm tall").center(80)
+  sorted_by_cohort = {}
+  students.each do |students_under_consideration|
+    cohort = students_under_consideration[:cohort]
+    name = students_under_consideration[:name]
+    if sorted_by_cohort[cohort] == nil
+      sorted_by_cohort[cohort] = [name]
+    else
+      sorted_by_cohort[cohort].push(name)
     end
+  end
+  sorted_by_cohort.each do |key, value|
+    puts (key.to_s + ": " + value.to_s).center(80)
   end
 end
 def print_footer(students)
@@ -46,5 +54,5 @@ end
 #nothing happens until we call the methods
 students = input_students
 print_header
-print(students)
+print_revised(students)
 print_footer(students)
