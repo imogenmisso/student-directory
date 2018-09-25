@@ -2,7 +2,7 @@
 def interactive_menu
   loop do
     print_menu
-    process(gets.chomp)
+    process(STDIN.gets.chomp)
   end
 end
 
@@ -10,12 +10,13 @@ def print_menu
   puts "1. Input the students"
   puts "2. Show the students"
   puts "3. Save the list to students.csv"
+  puts "4. Load the list from students.csv"
   puts "9. Exit"
 end
 
 def show_students
   print_header
-  print_student_list
+  print_by_cohort
   print_footer
 end
 
@@ -25,10 +26,12 @@ def process(selection)
       input_students
     when "2"
       show_students
-    when "3"
-      save_students
     when "9"
       exit
+    when "3"
+      save_students
+    when "4"
+      load_students
     else
       puts "I don't know what you meant, try again"
   end
@@ -37,27 +40,25 @@ end
 def input_students
   puts "Please enter the names of the students, followed by some personal information"
   puts "To finish, just hit return twice"
-  #create an empty array
   students = []
-  #get the first name
-  name = gets.strip
+  name = STDIN.gets.strip
   while !name.empty? do
     puts "Which cohort do they belong to?"
-      cohort = gets.strip
+      cohort = STDIN.gets.strip
       if cohort.empty?
           cohort = :november
       end
       cohort = cohort.to_sym
     puts "Favourite hobby"
-      hobby = gets.strip
+      hobby = STDIN.gets.strip
     puts "Country of birth"
-      country = gets.strip
+      country = STDIN.gets.strip
     puts "What is their height in cm?"
-      height = gets.strip.to_s
+      height = STDIN.gets.strip.to_s
     @students << {name: name, cohort: cohort, hobby: hobby, country: country, height: height}
     puts "Now we have #{@students.count} students"
     puts "Please enter another name"
-    name = gets.strip
+    name = STDIN.gets.strip
   end
 end
 
@@ -67,9 +68,13 @@ def print_header
 end
 
 def print_student_list
-  @students.each_with_index do |student, index|
-    if student[:name].length < 12
-      puts ("#{index + 1}. #{student[:name]}, #{student[:cohort]} cohort, likes #{student[:hobby]}, born in #{student[:country]}, is #{student[:height]}cm tall").center(80)
+  count = 0
+  until count == @students.count
+    @students.each_with_index do |student, index|
+      if student[:name].length < 12
+        puts ("#{index + 1}. #{student[:name]}, #{student[:cohort]} cohort, likes #{student[:hobby]}, born in #{student[:country]}, is #{student[:height]}cm tall").center(80)
+        count += 1
+      end
     end
   end
 end
@@ -111,4 +116,26 @@ def save_students
   file.close
 end
 
+def load_students(filename = "students.csv")
+  file = File.open(filename, "r")
+  file.readlines.each do |line|
+  name, cohort = line.chomp.split(',')
+    @students << {name: name, cohort: cohort.to_sym}
+  end
+  file.close
+end
+
+def try_load_students
+  filename = ARGV.first
+  return if filename.nil?
+  if File.exists?(filename)
+    load_students(filename)
+     puts "Loaded #{@students.count} from #{filename}"
+  else
+    puts "Sorry, #{filename} doesn't exist."
+    exit
+  end
+end
+
+try_load_students
 interactive_menu
