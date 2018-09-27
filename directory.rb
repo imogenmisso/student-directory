@@ -1,3 +1,5 @@
+require 'csv'
+
 @students = []
 def interactive_menu
   loop do
@@ -9,8 +11,8 @@ end
 def print_menu
   puts "1. Input the students"
   puts "2. Show the students"
-  puts "3. Save the list to students.csv"
-  puts "4. Load the list from students.csv"
+  puts "3. Save the list"
+  puts "4. Load the list"
   puts "9. Exit"
 end
 
@@ -23,14 +25,19 @@ end
 def process(selection)
   case selection
     when "1"
+      puts "You chose 1"
       input_students
     when "2"
+      puts "You chose 2"
       show_students
     when "9"
+      puts "You chose 9"
       exit
     when "3"
+      puts "You chose 3"
       save_students
     when "4"
+      puts "You chose 4"
       load_students
     else
       puts "I don't know what you meant, try again"
@@ -49,18 +56,19 @@ def input_students
           cohort = :november
       end
       cohort = cohort.to_sym
-    puts "Favourite hobby"
-      hobby = STDIN.gets.strip
     puts "Country of birth"
       country = STDIN.gets.strip
-    puts "What is their height in cm?"
-      height = STDIN.gets.strip.to_s
-    @students << {name: name, cohort: cohort, hobby: hobby, country: country, height: height}
+    add_student_to_array(name, cohort, country)
     puts "Now we have #{@students.count} students"
     puts "Please enter another name"
     name = STDIN.gets.strip
   end
 end
+
+def add_student_to_array(name, cohort, country)
+  @students << {name: name, cohort: cohort, country: country}
+end
+
 
 def print_header
   puts "The students of Villains Academy".center(80)
@@ -72,7 +80,7 @@ def print_student_list
   until count == @students.count
     @students.each_with_index do |student, index|
       if student[:name].length < 12
-        puts ("#{index + 1}. #{student[:name]}, #{student[:cohort]} cohort, likes #{student[:hobby]}, born in #{student[:country]}, is #{student[:height]}cm tall").center(80)
+        puts ("#{index + 1}. #{student[:name]}, #{student[:cohort]} cohort, born in #{student[:country]}").center(80)
         count += 1
       end
     end
@@ -107,33 +115,32 @@ def print_footer
 end
 
 def save_students
-  file = File.open("students.csv", "w")
-  @students.each do |student|
-    student_data = [student[:name], student[:cohort]]
-    csv_line = student_data.join(",")
-    file.puts csv_line
+  puts "What would you like to call the file?"
+  filename = STDIN.gets.chomp
+  CSV.open(filename, "w") do |file|
+    @students.each do |student|
+      file << [student[:name], student[:cohort], student[:country]]
+    end
   end
-  file.close
 end
 
 def load_students(filename = "students.csv")
-  file = File.open(filename, "r")
-  file.readlines.each do |line|
-  name, cohort = line.chomp.split(',')
-    @students << {name: name, cohort: cohort.to_sym}
-  end
-  file.close
+  CSV.foreach(filename) do |row|
+      add_student_to_array(row[0], row[1], row[3])
+    end
 end
 
 def try_load_students
   filename = ARGV.first
-  return if filename.nil?
-  if File.exists?(filename)
+  if filename.nil?
+    puts 'Loading students.csv by default'
+    load_students
+  elsif File.exists?(filename)
     load_students(filename)
      puts "Loaded #{@students.count} from #{filename}"
   else
-    puts "Sorry, #{filename} doesn't exist."
-    exit
+    puts "Sorry, #{filename} doesn't exist. Loading students.csv by default"
+    load_students 
   end
 end
 
